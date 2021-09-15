@@ -1,0 +1,45 @@
+package game.model;
+
+import javafx.scene.image.Image;
+import game.utils.ImageUtil;
+
+public class Block
+ extends Node{
+    public static String BLOCK_IMG_1 = "image/up.png";
+    public static String BLOCK_IMG_2 = "image/classroom.png";
+    public static String BLOCK_IMG_3 = "image/computer.png";
+    public static String BLOCK_IMG_4 = "image/escalator.png";
+    public static String BLOCK_IMG_5 = "image/sofa.png";
+
+    
+    // Create block based on different types
+    public static Block createBlock(int x,int y, int type){
+        if(type < 1 || type > 5){
+            return null;
+        }
+        String img = "";
+        if(type == 1){
+            img = BLOCK_IMG_1;
+        }else if(type == 2){
+            img = BLOCK_IMG_2;
+        }else if(type == 3){
+            img = BLOCK_IMG_3;
+        }else if(type == 4){
+            img = BLOCK_IMG_4;
+        }else if(type == 5){
+            img = BLOCK_IMG_5;
+        }
+        return new Block
+(x,y, ImageUtil.getImage(img));
+    }
+
+    public Block
+(int x, int y, Image image) {
+        super(x, y, image);
+    }
+
+    public Block
+(int x, int y) {
+        super(x, y);
+    }
+}

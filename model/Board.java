@@ -1,0 +1,152 @@
+package game.model;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class Board {
+    public static int WIDTH_SIZE = 16;
+    public static int HEIGHT_SIZE = 12;
+    private Assistant assistant;
+    private Node[][] nodes;
+    private List<Treasure> treasures;
+    public Board() {
+        this.nodes = new Node[WIDTH_SIZE][HEIGHT_SIZE];
+        for (int i = 0; i < WIDTH_SIZE; i++) {
+            for (int j = 0; j < HEIGHT_SIZE; j++) {
+                nodes[i][j] = new Node(i, j);
+            }
+        }
+        // Create an assistant
+        assistant = new Assistant();
+        AssistantNode node = AssistantNode.createNode(WIDTH_SIZE / 2, HEIGHT_SIZE / 2);
+        nodes[WIDTH_SIZE / 2][HEIGHT_SIZE / 2] = node;
+        node.setEmpty(false);
+        assistant.addNode(node);
+        treasures = new ArrayList<>();
+        // Use the treasure method
+        createRandomTreasure(2);
+        // Use the block method
+        initBlock();
+    }
+
+    // Initialize the 10 blocks
+    private void initBlock() {
+        Random random = new Random();
+        List<Node> list = getEmptyNode();
+        for (int i = 0; i < 10; i++) {
+            Node node = list.get(random.nextInt(list.size()));
+            nodes[node.getRow()][node.getCol()] = Block.createBlock(node.getRow(), node.getCol(), random.nextInt(5) + 1);
+            nodes[node.getRow()][node.getCol()].setEmpty(false);
+            list.remove(node);
+        }
+    }
+
+    // Create 2 random treasure: professor and student
+    public void createRandomTreasure(int size) {
+        for (Treasure treasure : treasures) {
+            clearNode(treasure);
+        }
+        treasures.clear();
+        Random random = new Random();
+        List<Node> list = getEmptyNode();
+        int type = 0;
+        while (treasures.size() < 2) {
+            Node node = list.get(random.nextInt(list.size()));
+            if(node.getCol() == assistant.getCol() && node.getRow() == assistant.getRow()) {
+                continue;
+            }
+            Treasure treasure = Treasure.createTreasure(node.getRow(), node.getCol(), type % 2 + 1);
+            nodes[node.getRow()][node.getCol()] = treasure;
+            treasures.add(treasure);
+            nodes[node.getRow()][node.getCol()].setEmpty(false);
+            list.remove(node);
+            type++;
+        }
+
+    }
+
+    public List<Node> getEmptyNode() {
+        List<Node> list = new ArrayList<>();
+        for (int i = 0; i < WIDTH_SIZE; i++) {
+            for (int j = 0; j < HEIGHT_SIZE; j++) {
+                if (nodes[i][j].isEmpty()) {
+                    list.add(nodes[i][j]);
+                }
+            }
+        }
+        return list;
+    }
+
+    // The assistant moving under the given conditions
+    public void moveAssistant() {
+        int nextRow = assistant.getNextRow();
+        int nextCol = assistant.getNextCol();
+        // Clashing the boudnaries
+        if( nextRow < 0 || nextRow >= WIDTH_SIZE || nextCol < 0 || nextCol >= HEIGHT_SIZE) {
+            Game.getInstance().setOver(true);
+            return;
+        }
+        Node temp = nodes[nextRow][nextCol];
+        // Clashing into the walls
+        if (temp instanceof Block) {
+            Game.getInstance().setOver(true);
+        } else {
+            for (AssistantNode node : assistant.getNodes()) {
+                clearNode(node);
+            }
+            assistant.move();
+            for (AssistantNode node : assistant.getNodes()) {
+                int col = node.getCol();
+                int row = node.getRow();
+                if( row < 0 || row >= WIDTH_SIZE || col < 0 || col >= HEIGHT_SIZE) {
+                    Game.getInstance().setOver(true);
+                    return;
+                }
+                putNode(node);
+            }
+            getTreasure(nextRow,nextCol);
+
+        }
+    }
+
+    public void clearNode(Node node) {
+        if (node == null) {
+            return;
+        }
+        nodes[node.getRow()][node.getCol()] = new Node(node.getRow(), node.getCol());
+    }
+
+    public void putNode(Node node) {
+        if (node == null) {
+            return;
+        }
+
+        nodes[node.getRow()][node.getCol()] = node;
+        node.setEmpty(false);
+    }
+    
+    public Node[][] getNodes() {
+        return nodes;
+    }
+
+    public Assistant getAssistant() {
+        return assistant;
+    }
+
+    public void setNodes(Node[][] nodes) {
+        this.nodes = nodes;
+    }
+
+    public void getTreasure(int row,int col) {
+        for (Treasure treasure : treasures) {
+            if(treasure.getRow() == row && treasure.getCol() == col) {
+                int score = Game.getInstance().getPlayer().getScore();
+                Game.getInstance().getPlayer().setScore(score + treasure.getScore());
+                createRandomTreasure(2);
+                putNode(assistant.getNodes().getFirst());
+                break;
+            }
+        }
+    }
+}

@@ -1,0 +1,139 @@
+package game.model;
+
+import java.util.LinkedList;
+
+/**
+ * 蛇类
+ */
+public class Assistant {
+    // 蛇节点
+    private LinkedList<AssistantNode> nodes;
+    // 蛇方向
+    private int direct = -1;
+    // 方向常量
+    public final static int DIRECT_EAST = 1;
+    public final static int DIRECT_WEST = 2;
+    public final static int DIRECT_SOUTH = 3;
+    public final static int DIRECT_NORTH = 4;
+
+    public Assistant() {
+        nodes = new LinkedList<>();
+    }
+
+    public void addNode(AssistantNode node) {
+        nodes.addLast(node);
+    }
+
+    /**
+     * 蛇移动，移动思路是移除蛇头，把蛇尾放到蛇头即可
+     */
+    public void move() {
+        if(direct == -1) {
+            return;
+        }
+        AssistantNode head = nodes.getFirst();
+
+        int row = head.getRow();
+        int col = head.getCol();
+        AssistantNode last = nodes.removeLast();
+        // 根据方向移动
+        switch (direct) {
+            case DIRECT_EAST:
+                col = col + 1;
+                break;
+            case DIRECT_WEST:
+                col = col - 1;
+                break;
+            case DIRECT_SOUTH:
+                row += 1;
+                break;
+            case DIRECT_NORTH:
+                row -= 1;
+                break;
+        }
+        last.setCol(col);
+        last.setRow(row);
+        nodes.addFirst(last);
+
+    }
+
+    /**
+     * 获取蛇的下一步的纵坐标
+     * @return
+     */
+    public int getCol() {
+        AssistantNode head = nodes.getFirst();
+        return head.getCol();
+    }
+
+    /**
+     * 获取蛇的下一步的横坐标
+
+     * @return
+     */
+    public int getRow() {
+        AssistantNode head = nodes.getFirst();
+        return head.getRow();
+    }
+    /**
+     * 获取蛇的下一步的纵坐标
+     * @return
+     */
+    public int getNextCol() {
+        AssistantNode head = nodes.getFirst();
+
+        int col = head.getCol();
+        switch (direct) {
+            case DIRECT_EAST:
+                col = col + 1;
+                break;
+            case DIRECT_WEST:
+                col = col - 1;
+                break;
+        }
+        return col;
+    }
+
+    /**
+     * 获取蛇的下一步的横坐标
+
+     * @return
+     */
+    public int getNextRow() {
+        AssistantNode head = nodes.getFirst();
+
+        int row = head.getRow();
+        switch (direct) {
+            case DIRECT_SOUTH:
+                row += 1;
+                break;
+            case DIRECT_NORTH:
+                row -= 1;
+                break;
+        }
+        return row;
+    }
+
+    /**
+     * 蛇改变方向，当前是左右方向的，只能上下移动，当前是上下的，只能左右
+     * @param direct
+     */
+    public void changeDirect(int direct) {
+        if(this.direct == -1) {
+            Game.getInstance().setStart(true);
+        }
+        this.direct = direct;
+    }
+
+    public int getDirect() {
+        return direct;
+    }
+
+    public LinkedList<AssistantNode> getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(LinkedList<AssistantNode> nodes) {
+        this.nodes = nodes;
+    }
+}

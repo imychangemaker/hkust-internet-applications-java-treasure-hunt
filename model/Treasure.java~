@@ -1,0 +1,47 @@
+package game.model;
+
+import javafx.scene.image.Image;
+import game.utils.ImageUtil;
+
+/**
+ * 食物类
+ */
+public class Treasure extends Node{
+    // 食物分数
+    private int score;
+    // 图片
+    public static String FOOD_1_PATH = "image/11734.png";
+    public static String FOOD_2_PATH = "image/IMG_0107.png";
+    // 类型，加分，减分
+    public static int TYPE_ADD_SCORE = 1;
+    public static int TYPE_SUB_SCORE = 2;
+    public Treasure(int x, int y, Image image, int score) {
+        super(x, y, image);
+        this.score = score;
+    }
+
+    public static Treasure createTreasure(int x, int y,int type){
+        if(type == TYPE_ADD_SCORE) {
+            return new Treasure(x,y, ImageUtil.getImage(FOOD_1_PATH),100);
+        }
+        if(type == TYPE_SUB_SCORE) {
+            return new Treasure(x,y,ImageUtil.getImage(FOOD_2_PATH),-50);
+        }
+        return null;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    @Override
+    public String toString() {
+        return "Treasure{" +
+                "score=" + score +
+                '}';
+    }
+}

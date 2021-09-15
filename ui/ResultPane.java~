@@ -1,0 +1,62 @@
+package game.ui;
+
+import game.model.Game;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+
+/**
+ * 游戏结束显示类
+ */
+public class ResultPane extends Pane {
+    private Game game;
+    private String msg;
+    public ResultPane(Game game,String msg) {
+        this.msg = msg;
+        this.setPrefSize(400, 800);
+        this.game = game;
+        this.setStyle("-fx-background-color: black;");
+        init();
+    }
+
+    public void init() {
+        Label label = new Label(msg);
+        label.setTextFill(Color.WHITE);
+        label.setFont(new Font(35));
+        label.setStyle("-fx-font-weight: bold");
+        label.setLayoutX(60);
+        label.setLayoutY(80);
+
+        // 显示得分
+        Label scoreLab = new Label("Your score is " + game.getScore() + " points");
+        scoreLab.setTextFill(Color.WHITE);
+        scoreLab.setFont(new Font(28));
+        scoreLab.setLayoutX(60);
+        scoreLab.setLayoutY(220);
+
+        this.getChildren().add(label);
+        this.getChildren().add(scoreLab);
+
+        Label tipLab = new Label("It's time to start working.");
+        tipLab.setTextFill(Color.WHITE);
+        tipLab.setFont(new Font(28));
+        tipLab.setLayoutX(60);
+        tipLab.setLayoutY(280);
+        this.getChildren().add(tipLab);
+
+        // 关闭游戏并保存排行榜
+        Button button = new Button("OK");
+        button.setPrefSize(100,50);
+        button.setTranslateX(250);
+        button.setTranslateY(350);
+        this.getChildren().add(button);
+        button.setOnAction((e)->{
+            Game.savePlayers();
+            System.exit(0);
+        });
+    }
+
+
+}
